@@ -1,31 +1,26 @@
 /**
  * DELHI BUSINESS SOLUTIONS - PREMIUM CORE WEB APPLICATION ENGINE
- * CODE VERSION: 2.6.0 (PRODUCTION ENHANCED & GOOGLE SHEET INTEGRATED)
+ * CODE VERSION: 2.8.0 (PRELOADER FAILSAFE & CHANNELS URL-ENCODED INTEGRATED)
  */
 
 document.addEventListener("DOMContentLoaded", () => {
     
     // ==========================================
-    // 1. APPLICATION INTAKE & PRELOADER TIMING ENGINE
+    // 1. APPLICATION INTAKE & FAILSAFE PRELOADER ENGINE
     // ==========================================
     const preloader = document.getElementById("preloader");
     
-    window.addEventListener("load", () => {
-        setTimeout(() => {
-            if (preloader) {
-                preloader.classList.add("fade-out");
-                document.body.classList.remove("loading");
-            }
-            initializeMetricsCounter();
-        }, 600);
-    });
-
-    setTimeout(() => {
+    function removePreloader() {
         if (preloader && !preloader.classList.contains("fade-out")) {
             preloader.classList.add("fade-out");
             document.body.classList.remove("loading");
+            initializeMetricsCounter(); // काउंटर शुरू करें
         }
-    }, 2000);
+    }
+
+    // 1 सेकंड के अंदर चक्र को जबरन हटा दें (बिना किसी नेटवर्क रुकावट के)
+    setTimeout(removePreloader, 1000);
+    window.addEventListener("load", removePreloader);
 
     // ==========================================
     // 2. RADIAL BACKGROUND MOUSE GLOW & CARD REFLECTIONS
@@ -136,11 +131,6 @@ document.addEventListener("DOMContentLoaded", () => {
             const yAxis = (window.innerHeight / 2 - e.pageY) / 45;
             parallaxScene.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
         });
-        
-        document.addEventListener("mouseleave", () => {
-            parallaxScene.style.transform = `rotateY(0deg) rotateX(0deg)`;
-            parallaxScene.style.transition = "transform 0.6s ease-out";
-        });
     }
 
     // ==========================================
@@ -151,6 +141,7 @@ document.addEventListener("DOMContentLoaded", () => {
         
         counterFields.forEach(counter => {
             const target = +counter.getAttribute("data-target");
+            if (!target) return;
             const duration = 1800;
             const increment = target / (duration / 16);
             let initialCount = 0;
@@ -188,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
     revealTargets.forEach(target => elementRevealObserver.observe(target));
 
     // ==========================================
-    // 8. GOOGLE SHEETS LIVE DATA INTEGRATION BRIDGE
+    // 8. GOOGLE SHEETS LIVE DATA INTEGRATION BRIDGE (URL-ENCODED REDIRECT FIX)
     // ==========================================
     const intakeForm = document.getElementById("businessIntakeForm");
     const logFeedback = document.getElementById("formFeedback");
@@ -202,24 +193,18 @@ document.addEventListener("DOMContentLoaded", () => {
             const originalBtnContent = submitBtn.innerHTML;
             submitBtn.innerHTML = `<span>Saving Lead Data...</span> <i class="fas fa-spinner fa-spin icon-space"></i>`;
             
+            // नाम एट्रिब्यूट्स के आधार पर फॉर्म डेटा कैप्चर करना
             const formData = new FormData(intakeForm);
+            const urlEncodedString = new URLSearchParams(formData).toString();
             
             try {
-                // ACTIVE DEPLOYED GOOGLE APPS SCRIPT WEB APP URL
-                const targetWebhook = https://script.google.com/macros/s/AKfycbxIwxsGbmBs04wBygpMn_P1EORAo4sL8YskG-a53xNJa3YmxFz1fXe12WJV5BFF6O9vrA/exec
-                const formObject = {};
-                formData.forEach((value, key) => {
-                    formObject[key] = value;
-                });
-
-                // Fetch Payload Dispatch via no-cors mode to ensure smooth transfer without browser blockages
-                await fetch(targetWebhook, {
-                    method: "POST",
-                    mode: "no-cors", 
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify(formObject)
+                // आपकी एक्टिव Google Apps Script Web App URL
+                const targetWebhook = "https://script.google.com/macros/s/AKfycbxlwxsGbmBs04wBygpMn_P1EORAo4sL8YskG-a53xNJa3YmxFz1fXe12WJ5BFF6O9vrA/exec"; 
+                
+                // Apps Script के लिए Query parameters के रूप में GET कॉल (CORS-Free Safe Transfer)
+                await fetch(`${targetWebhook}?${urlEncodedString}`, {
+                    method: "GET", 
+                    mode: "no-cors"
                 });
 
                 logFeedback.className = "form-feedback-log success";
