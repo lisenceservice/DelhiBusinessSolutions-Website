@@ -1,6 +1,6 @@
 /**
  * DELHI BUSINESS SOLUTIONS - PREMIUM CORE WEB APPLICATION ENGINE
- * CODE VERSION: 2.8.0 (PRELOADER FAILSAFE & CHANNELS URL-ENCODED INTEGRATED)
+ * CODE VERSION: 2.9.0 (STABLE PRELOADER & LIVE GOOGLE SHEET INTEGRATED)
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // 1 सेकंड के अंदर चक्र को जबरन हटा दें (बिना किसी नेटवर्क रुकावट के)
+    // 1 सेकंड के अंदर लोडिंग चक्र को जबरन हटा दें (बिना किसी नेटवर्क या मैप रुकावट के)
     setTimeout(removePreloader, 1000);
     window.addEventListener("load", removePreloader);
 
@@ -179,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
     revealTargets.forEach(target => elementRevealObserver.observe(target));
 
     // ==========================================
-    // 8. GOOGLE SHEETS LIVE DATA INTEGRATION BRIDGE (URL-ENCODED REDIRECT FIX)
+    // 8. GOOGLE SHEETS LIVE DATA INTEGRATION BRIDGE (URL-ENCODED SAFE CONTEXT)
     // ==========================================
     const intakeForm = document.getElementById("businessIntakeForm");
     const logFeedback = document.getElementById("formFeedback");
@@ -198,8 +198,8 @@ document.addEventListener("DOMContentLoaded", () => {
             const urlEncodedString = new URLSearchParams(formData).toString();
             
             try {
-                // आपकी एक्टिव Google Apps Script Web App URL
-                const targetWebhook = "https://script.google.com/macros/s/AKfycbxlwxsGbmBs04wBygpMn_P1EORAo4sL8YskG-a53xNJa3YmxFz1fXe12WJ5BFF6O9vrA/exec"; 
+                // आपकी नई एक्टिव और वैलिड Google Apps Script Web App URL (PERFECTLY SET)
+                const targetWebhook = "https://script.google.com/macros/s/AKfycbxiQz176zB1ZPFgpu57FQRD4FIL5bX_NexNE6viEPXxke-e2jUkZdvbC-GF1zv6IAlNKQ/exec 
                 
                 // Apps Script के लिए Query parameters के रूप में GET कॉल (CORS-Free Safe Transfer)
                 await fetch(`${targetWebhook}?${urlEncodedString}`, {
