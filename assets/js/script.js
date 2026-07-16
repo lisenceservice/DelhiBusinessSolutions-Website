@@ -1,6 +1,6 @@
 /**
  * DELHI BUSINESS SOLUTIONS - PREMIUM CORE WEB APPLICATION ENGINE
- * CODE VERSION: 2.9.0 (STABLE PRELOADER & LIVE GOOGLE SHEET INTEGRATED)
+ * CODE VERSION: 3.1.0 (PRELOADER FAILSAFE & VALID URL SYNTAX INTEGRATED)
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    // 1 सेकंड के अंदर लोडिंग चक्र को जबरन हटा दें (बिना किसी नेटवर्क या मैप रुकावट के)
+    // 1 सेकंड के अंदर चक्र को स्क्रीन से जबरन हटा देगा (बिना किसी रुकावट के)
     setTimeout(removePreloader, 1000);
     window.addEventListener("load", removePreloader);
 
@@ -179,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
     revealTargets.forEach(target => elementRevealObserver.observe(target));
 
     // ==========================================
-    // 8. GOOGLE SHEETS LIVE DATA INTEGRATION BRIDGE (URL-ENCODED SAFE CONTEXT)
+    // 8. GOOGLE SHEETS LIVE DATA INTEGRATION BRIDGE (URL-ENCODED FIXED WITH ROBUST SYNTAX)
     // ==========================================
     const intakeForm = document.getElementById("businessIntakeForm");
     const logFeedback = document.getElementById("formFeedback");
@@ -193,13 +193,12 @@ document.addEventListener("DOMContentLoaded", () => {
             const originalBtnContent = submitBtn.innerHTML;
             submitBtn.innerHTML = `<span>Saving Lead Data...</span> <i class="fas fa-spinner fa-spin icon-space"></i>`;
             
-            // नाम एट्रिब्यूट्स के आधार पर फॉर्म डेटा कैप्चर करना
             const formData = new FormData(intakeForm);
             const urlEncodedString = new URLSearchParams(formData).toString();
             
             try {
-                // आपकी नई एक्टिव और वैलिड Google Apps Script Web App URL (PERFECTLY SET)
-                const targetWebhook = "https://script.google.com/macros/s/AKfycbxiQz176zB1ZPFgpu57FQRD4FIL5bX_NexNE6viEPXxke-e2jUkZdvbC-GF1zv6IAlNKQ/exec 
+                // आपकी एक्टिवेटेड Google Apps Script Web App URL (यहाँ सिंटैक्स पूरी तरह फिक्स कर दिया गया है)
+                const targetWebhook = "https://script.google.com/macros/s/AKfycbxiQz176zB1ZPFgpu57FQRD4FIL5bX_NexNE6viEPXxke-e2jUkZdvbC-GF1zv6IAlNKQ/exec"; 
                 
                 // Apps Script के लिए Query parameters के रूप में GET कॉल (CORS-Free Safe Transfer)
                 await fetch(`${targetWebhook}?${urlEncodedString}`, {
