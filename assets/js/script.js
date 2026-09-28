@@ -1,25 +1,37 @@
 /**
  * DELHI BUSINESS SOLUTIONS - PREMIUM CORE WEB APPLICATION ENGINE
- * CODE VERSION: 3.2.0 (LIVE GOOGLE SHEETS BEACON SYNC INTEGRATED)
+ * CODE VERSION: 3.3.0 (AGGRESSIVE PRELOADER DISMISSAL & LIVE BEACON SYNC)
  */
 
-document.addEventListener("DOMContentLoaded", () => {
-    
-    // ==========================================
-    // 1. APPLICATION INTAKE & FAILSAFE PRELOADER ENGINE
-    // ==========================================
+// ==========================================
+// 1. APPLICATION INTAKE & FAILSAFE PRELOADER ENGINE (FORCE REMOVE)
+// ==========================================
+function dismissPreloader() {
     const preloader = document.getElementById("preloader");
-    
-    function removePreloader() {
-        if (preloader && !preloader.classList.contains("fade-out")) {
-            preloader.classList.add("fade-out");
-            document.body.classList.remove("loading");
-            initializeMetricsCounter();
-        }
+    if (preloader) {
+        preloader.style.transition = "opacity 0.3s ease, visibility 0.3s ease";
+        preloader.style.opacity = "0";
+        preloader.style.visibility = "hidden";
+        setTimeout(() => {
+            preloader.style.display = "none";
+        }, 300);
     }
+    document.body.classList.remove("loading");
+    if (typeof initializeMetricsCounter === "function") {
+        initializeMetricsCounter();
+    }
+}
 
-    setTimeout(removePreloader, 1000);
-    window.addEventListener("load", removePreloader);
+// Har event par trigger karein taaki loading circle bilkul na atke
+if (document.readyState === "complete" || document.readyState === "interactive") {
+    dismissPreloader();
+} else {
+    document.addEventListener("DOMContentLoaded", dismissPreloader);
+}
+window.addEventListener("load", dismissPreloader);
+setTimeout(dismissPreloader, 400);
+
+document.addEventListener("DOMContentLoaded", () => {
 
     // ==========================================
     // 2. RADIAL BACKGROUND MOUSE GLOW & CARD REFLECTIONS
@@ -117,7 +129,7 @@ document.addEventListener("DOMContentLoaded", () => {
         setTimeout(coreTypingLoop, processSpeed);
     }
 
-    if (targetTyping) setTimeout(coreTypingLoop, 800);
+    if (targetTyping) setTimeout(coreTypingLoop, 600);
 
     // ==========================================
     // 5. 3D DEVIATION INTERACTOR PLANE
@@ -193,7 +205,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 submitBtn.innerHTML = `<span>Saving Lead Data...</span> <i class="fas fa-spinner fa-spin icon-space"></i>`;
             }
 
-            const SCRIPT_URL = const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmaqLPT8Nc_imuw03Hy4_bqlB6_xDtN9YFiiuEjakS0aaVS_II-Dos-w_ksAkBCsRPcw/exec";
+            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmaqLPT8Nc_imuw03Hy4_bqlB6_xDtN9YFiiuEjakS0aaVS_II-Dos-w_ksAkBCsRPcw/exec";
+
             const nameVal = document.getElementById("name") ? document.getElementById("name").value.trim() : "";
             const mobileVal = document.getElementById("mobile") ? document.getElementById("mobile").value.trim() : "";
             const emailVal = document.getElementById("email") ? document.getElementById("email").value.trim() : "";
@@ -210,7 +223,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const syncEndpoint = `${SCRIPT_URL}?${queryParams}`;
 
-            // Image Beacon Method (100% bypasses CORS issues)
             const leadBeacon = new Image();
             leadBeacon.src = syncEndpoint;
 
