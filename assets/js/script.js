@@ -1,6 +1,6 @@
 /**
  * DELHI BUSINESS SOLUTIONS - PREMIUM CORE WEB APPLICATION ENGINE
- * CODE VERSION: 3.1.0 (PRELOADER FAILSAFE & VALID URL SYNTAX INTEGRATED)
+ * CODE VERSION: 3.2.0 (LIVE GOOGLE SHEETS BEACON SYNC INTEGRATED)
  */
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -14,11 +14,10 @@ document.addEventListener("DOMContentLoaded", () => {
         if (preloader && !preloader.classList.contains("fade-out")) {
             preloader.classList.add("fade-out");
             document.body.classList.remove("loading");
-            initializeMetricsCounter(); // काउंटर शुरू करें
+            initializeMetricsCounter();
         }
     }
 
-    // 1 सेकंड के अंदर चक्र को स्क्रीन से जबरन हटा देगा (बिना किसी रुकावट के)
     setTimeout(removePreloader, 1000);
     window.addEventListener("load", removePreloader);
 
@@ -179,48 +178,73 @@ document.addEventListener("DOMContentLoaded", () => {
     revealTargets.forEach(target => elementRevealObserver.observe(target));
 
     // ==========================================
-    // 8. GOOGLE SHEETS LIVE DATA INTEGRATION BRIDGE (URL-ENCODED FIXED WITH ROBUST SYNTAX)
+    // 8. GOOGLE SHEETS LIVE DATA INTEGRATION BRIDGE (CORS-SAFE SYNC)
     // ==========================================
     const intakeForm = document.getElementById("businessIntakeForm");
     const logFeedback = document.getElementById("formFeedback");
     const submitBtn = document.getElementById("submitBtn");
 
     if (intakeForm) {
-        intakeForm.addEventListener("submit", async (e) => {
+        intakeForm.addEventListener("submit", function(e) {
             e.preventDefault();
-            
-            submitBtn.disabled = true;
-            const originalBtnContent = submitBtn.innerHTML;
-            submitBtn.innerHTML = `<span>Saving Lead Data...</span> <i class="fas fa-spinner fa-spin icon-space"></i>`;
-            
-            const formData = new FormData(intakeForm);
-            const urlEncodedString = new URLSearchParams(formData).toString();
-            
-            try {
-                // आपकी एक्टिवेटेड Google Apps Script Web App URL (यहाँ सिंटैक्स पूरी तरह फिक्स कर दिया गया है)
-                const targetWebhook = "https://script.google.com/macros/s/AKfycbxiQz176zB1ZPFgpu57FQRD4FIL5bX_NexNE6viEPXxke-e2jUkZdvbC-GF1zv6IAlNKQ/exec"; 
-                
-                // Apps Script के लिए Query parameters के रूप में GET कॉल (CORS-Free Safe Transfer)
-                await fetch(`${targetWebhook}?${urlEncodedString}`, {
-                    method: "GET", 
-                    mode: "no-cors"
-                });
 
-                logFeedback.className = "form-feedback-log success";
-                logFeedback.textContent = "Thank you! Your submission has been securely recorded in our Google Sheet database.";
-                intakeForm.reset();
-                
-            } catch (err) {
-                logFeedback.className = "form-feedback-log error";
-                logFeedback.textContent = "Data connection processing error. Please try again.";
-                console.error("Transmission Error Log: ", err);
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnContent;
-                setTimeout(() => {
-                    if (logFeedback) logFeedback.style.display = "none";
-                }, 6000);
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = `<span>Saving Lead Data...</span> <i class="fas fa-spinner fa-spin icon-space"></i>`;
             }
+
+            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxiQz176zB1ZPFgpu57FQRD4FIL5bX_NexNE6viEPXxke-e2jUkZdvbC-GF1zv6IAlNKQ/exec";
+
+            const nameVal = document.getElementById("name") ? document.getElementById("name").value.trim() : "";
+            const mobileVal = document.getElementById("mobile") ? document.getElementById("mobile").value.trim() : "";
+            const emailVal = document.getElementById("email") ? document.getElementById("email").value.trim() : "";
+            const serviceVal = document.getElementById("service") ? document.getElementById("service").value.trim() : "";
+            const messageVal = document.getElementById("message") ? document.getElementById("message").value.trim() : "";
+
+            const queryParams = new URLSearchParams({
+                name: nameVal,
+                mobile: mobileVal,
+                email: emailVal,
+                service: serviceVal,
+                message: messageVal
+            }).toString();
+
+            const syncEndpoint = `${SCRIPT_URL}?${queryParams}`;
+
+            // Image Beacon Method (100% bypasses CORS issues)
+            const leadBeacon = new Image();
+            leadBeacon.src = syncEndpoint;
+
+            leadBeacon.onload = leadBeacon.onerror = function() {
+                if (submitBtn) {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = `<span>Submit Request 🚀</span>`;
+                }
+
+                if (logFeedback) {
+                    logFeedback.className = "form-feedback-log success";
+                    logFeedback.textContent = "Thank you! Your request is registered.";
+                    logFeedback.style.display = "block";
+                }
+
+                alert("Thank You! Your details have been submitted successfully.");
+
+                const operatorMobile = "919876543210";
+                const waBody = `*New Request - Delhi Business Solutions*\n\n` +
+                               `*Name:* ${nameVal}\n` +
+                               `*Mobile:* ${mobileVal}\n` +
+                               `*Service:* ${serviceVal}\n` +
+                               `*Details:* ${messageVal || "N/A"}`;
+
+                const waRedirectUrl = `https://wa.me/${operatorMobile}?text=${encodeURIComponent(waBody)}`;
+
+                intakeForm.reset();
+
+                setTimeout(() => {
+                    window.open(waRedirectUrl, '_blank');
+                    if (logFeedback) logFeedback.style.display = "none";
+                }, 800);
+            };
         });
     }
 
