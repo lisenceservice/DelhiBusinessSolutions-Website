@@ -193,8 +193,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 submitBtn.innerHTML = `<span>Saving Lead Data...</span> <i class="fas fa-spinner fa-spin icon-space"></i>`;
             }
 
-            const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxiQz176zB1ZPFgpu57FQRD4FIL5bX_NexNE6viEPXxke-e2jUkZdvbC-GF1zv6IAlNKQ/exec";
-
+            const SCRIPT_URL = const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxmaqLPT8Nc_imuw03Hy4_bqlB6_xDtN9YFiiuEjakS0aaVS_II-Dos-w_ksAkBCsRPcw/exec";
             const nameVal = document.getElementById("name") ? document.getElementById("name").value.trim() : "";
             const mobileVal = document.getElementById("mobile") ? document.getElementById("mobile").value.trim() : "";
             const emailVal = document.getElementById("email") ? document.getElementById("email").value.trim() : "";
